@@ -1,0 +1,6 @@
+{"version": "1.2.0",
+ "packagesDir": ".lake/packages",
+ "packages": [],
+ "name": "jsp_000598_formalization",
+ "lakeDir": ".lake",
+ "fixedToolchain": false}
