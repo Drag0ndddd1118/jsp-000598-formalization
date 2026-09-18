@@ -101,3 +101,42 @@ Running `#print axioms JSP000598.jsp_000598`:
 ## License
 
 MIT License. Copyright (c) 2026 Qin Zhao.
+
+## Statement of record — `Challenge.lean`
+
+`Challenge.lean` declares the definitions the problem is phrased with and the proposition
+`JSP000598.jsp000598Statement`. It proves nothing, so a reviewer has only to read that one file to judge *what* has
+been claimed.
+
+```lean
+  ∃ n m : Nat, n ≠ m ∧ 0 < n ∧ 0 < m ∧
+        ∀ p : Nat, isPrime p = true → (hasBasePCarry n p = hasBasePCarry m p)
+```
+
+## Proof — `Submission.lean`
+
+`Submission.lean` imports `Challenge.lean`, so the proof and the statement refer to the *same*
+`JSP000598.jsp000598Statement` constant and cannot drift apart. The top-level result is
+
+```lean
+JSP000598.jsp_000598
+```
+
+It depends on `Quot.sound`, `propext` only, and the file contains no `sorry`, no `admit` and no `axiom`
+declaration. `check.py` type-checks the bridge
+
+```
+example : JSP000598.jsp000598Statement := JSP000598.jsp_000598
+```
+
+and re-runs the axiom audit.
+
+## Build and check
+
+```sh
+lake build
+python3 check.py
+```
+
+Toolchain: `leanprover/lean4:v4.34.0` (commit `293d5d0c0c3f3dded4688b3ccd6a33939ac5102b`). The development is self-contained:
+it uses Lean core only and depends on no external library.

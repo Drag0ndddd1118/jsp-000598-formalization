@@ -54,20 +54,11 @@ Furthermore, by Kummer's digit criterion:
 Clean. Zero custom axioms, zero sorry, kernel-verified in Lean 4 core ([propext, Quot.sound]).
 -/
 
-set_option maxRecDepth 2000000
+import Challenge
 
 namespace JSP000598
 
-/-! ### Central Binomial Coefficients and Exact Values -/
-
-/-- Standard factorial function. -/
-def fact : Nat → Nat
-  | 0 => 1
-  | n + 1 => (n + 1) * fact n
-
-/-- Central binomial coefficient C(2n, n) = (2n)! / (n! * n!). -/
-def centralBinom (n : Nat) : Nat :=
-  fact (2 * n) / (fact n * fact n)
+set_option maxRecDepth 2000000
 
 /-- C(174, 87) evaluated in Lean 4 kernel (52 digits). -/
 theorem centralBinom_87_val :
@@ -84,26 +75,6 @@ theorem centralBinom_88_val :
 theorem ratio_identity :
     44 * centralBinom 88 = 175 * centralBinom 87 := by
   rfl
-
-/-! ### Kummer Carry Criterion in Base p -/
-
-/-- Computable primality test on natural numbers. -/
-def isPrime (p : Nat) : Bool :=
-  2 ≤ p && (List.range (p - 2)).all (fun i => p % (i + 2) != 0)
-
-/-- By Kummer's theorem, a prime p divides C(2n, n) iff there is a carry in base p.
-    This tail-recursive loop checks if any base-p digit d of m satisfies 2 * d ≥ p. -/
-def hasBasePCarryLoop (p : Nat) : Nat → Nat → Bool
-  | _, 0 => false
-  | m, fuel + 1 =>
-    if m = 0 then false
-    else if 2 * (m % p) ≥ p then true
-    else hasBasePCarryLoop p (m / p) fuel
-
-/-- Kummer base-p carry predicate for C(2n, n). -/
-def hasBasePCarry (n p : Nat) : Bool :=
-  if p < 2 then false
-  else hasBasePCarryLoop p n (n + 1)
 
 theorem hasBasePCarry_zero (p : Nat) (fuel : Nat) : hasBasePCarryLoop p 0 fuel = false := by
   cases fuel <;> rfl
@@ -133,10 +104,6 @@ theorem hasBasePCarry_of_gt {n p : Nat} (hp : 2 ≤ p) (h : 2 * n < p) :
           rw [hdiv]
           exact hasBasePCarry_zero p (n + 1)
 
-/-- For all primes p ≤ 176, the carry status for n = 87 and m = 88 is identical. -/
-def primesEqualUpTo176 : Bool :=
-  (List.range 177).all (fun p => !isPrime p || (hasBasePCarry 87 p == hasBasePCarry 88 p))
-
 theorem primesEqualUpTo176_eq_true : primesEqualUpTo176 = true := by
   rfl
 
@@ -158,13 +125,6 @@ theorem kummer_same_primes (p : Nat) (hp : isPrime p = true) :
     have h87 : hasBasePCarry 87 p = false := hasBasePCarry_of_gt hp2 (by omega)
     have h88 : hasBasePCarry 88 p = false := hasBasePCarry_of_gt hp2 (by omega)
     rw [h87, h88]
-
-/-! ### Explicit Shared Prime Divisors -/
-
-/-- The exact set of 28 shared prime divisors of C(174, 87) and C(176, 88). -/
-def sharedPrimeDivisors : List Nat :=
-  [2, 3, 5, 7, 11, 13, 19, 23, 31, 47, 53, 89, 97, 101, 103, 107, 109, 113,
-   127, 131, 137, 139, 149, 151, 157, 163, 167, 173]
 
 /-- Exactly 28 primes divide both central binomial coefficients. -/
 theorem shared_divisors_count : sharedPrimeDivisors.length = 28 := by
@@ -191,3 +151,5 @@ theorem jsp_000598 :
   exact ⟨87, 88, by decide, by decide, by decide, kummer_same_primes⟩
 
 end JSP000598
+
+#print axioms JSP000598.jsp_000598
