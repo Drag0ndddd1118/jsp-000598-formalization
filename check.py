@@ -35,7 +35,7 @@ def fail(msg):
 src = open(os.path.join(REPO, "Submission.lean")).read()
 code = re.sub(r"/-.*?-/", "", src, flags=re.S)
 code = re.sub(r"--[^\n]*", "", code)
-for bad in ("sorry", "admit", "axiom"):
+for bad in ("sorry", "admit", "axiom", "opaque", "unsafe", "partial", "native_decide"):
     if re.search(r"\b" + bad + r"\b", code):
         fail("Submission.lean contains `" + bad + "`")
 
